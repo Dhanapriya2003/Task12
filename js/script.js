@@ -33,11 +33,11 @@ async function loadEmployees() {
 }
 
 function viewEmployee(id) {
-    window.location.href = `view-employee.html?id=${id}`;
+    window.location.href = `/Task12/view-employee.html?id=${id}`;
 }
 
 function editEmployee(id) {
-    window.location.href = `edit-employee.html?id=${id}`;
+    window.location.href = `/Task12/edit-employee.html?id=${id}`;
 }
 
 // document.addEventListener("DOMContentLoaded", () => {

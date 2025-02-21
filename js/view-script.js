@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (employeeId) {
         try {
-            const response = await fetch(`http://localhost:8081/api/employees/${employeeId}`);
+            const response = await fetch(`${API_BASE_URL}/${employeeId}`);
             if (!response.ok) throw new Error("Failed to fetch employee details");
 
             const employee = await response.json();
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     } else {
         alert("Invalid employee ID");
-        window.location.href = "index.html";
+        window.location.href = "/Task12/index.html";
     }
 });
 

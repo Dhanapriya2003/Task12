@@ -33,7 +33,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (event)
         });
         if (!response.ok) throw new Error("Failed to update employee");
         alert("Employee updated successfully!");
-        window.location.href = "employees.html";
+        window.location.href = "/Task12/index.html";
     } catch (error) {
         console.error("Error updating employee:", error);
     }
