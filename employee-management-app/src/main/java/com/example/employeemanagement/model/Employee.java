@@ -5,13 +5,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "employees")
 public class Employee {
-
     @Id
-    private String id; // MongoDB uses String for ID
-
+    private String id;
     private String firstName;
     private String lastName;
     private String email;
+    
+    // Constructors, Getters, Setters
 
     // Getters and Setters
     public String getId() {

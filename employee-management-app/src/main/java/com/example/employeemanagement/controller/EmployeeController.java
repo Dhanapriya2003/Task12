@@ -1,55 +1,90 @@
 package com.example.employeemanagement.controller;
 
 import com.example.employeemanagement.model.Employee;
-import com.example.employeemanagement.service.EmployeeService;
+import com.example.employeemanagement.repository.EmployeeRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@Tag(name = "Employee Management", description = "APIs for managing employees")
+import java.util.List;
+import java.util.Optional;
+
+@CrossOrigin(origins = "*")
+@RestController
+@RequestMapping("/api/employees")
+@Tag(name = "Employee API", description = "Employee Management Operations")
 public class EmployeeController {
 
     @Autowired
-    private EmployeeService employeeService;
+    private EmployeeRepository repository;
 
-    @Operation(summary = "View Home Page", description = "Displays the list of employees")
-    @GetMapping("/")
-    public String viewHomePage(Model model) {
-        model.addAttribute("listEmployees", employeeService.getAllEmployees());
-        return "index";
+    @Operation(summary = "Get all employees")
+    @GetMapping
+    public List<Employee> getAllEmployees() {
+        System.out.println("inside getAllEmployees");
+        return repository.findAll();
+    }
+    @Operation(summary = "Get employee by ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable String id) {
+        System.out.println("Fetching employee with ID: " + id);
+
+        Optional<Employee> employee = repository.findById(id);
+        if (employee.isPresent()) {
+            System.out.println("Employee found: " + employee.get());
+            return ResponseEntity.ok(employee.get());
+        } else {
+            System.out.println("Employee not found for ID: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    @Operation(summary = "Show New Employee Form", description = "Displays the form to add a new employee")
-    @GetMapping("/showNewEmployeeForm")
-    public String showNewEmployeeForm(Model model) {
-        Employee employee = new Employee();
-        model.addAttribute("employee", employee);
-        return "add-employee";
+
+    @Operation(summary = "Create new employee")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Employee createEmployee(@RequestBody Employee employee) {
+        System.out.println("inside createEmployee");
+        return repository.save(employee);
     }
 
-    @Operation(summary = "Save Employee", description = "Saves a new employee or updates an existing one")
-    @PostMapping("/saveEmployee")
-    public String saveEmployee(@ModelAttribute("employee") Employee employee) {
-        employeeService.saveEmployee(employee);
-        return "redirect:/";
+    @Operation(summary = "Update employee")
+    @PutMapping("/{id}")
+    public ResponseEntity<Employee> updateEmployee(@PathVariable String id, @RequestBody Employee employeeDetails) {
+        System.out.println("inside updateEmployee with ID: " + id);
+
+        Optional<Employee> optionalEmployee = repository.findById(id);
+        if (optionalEmployee.isPresent()) {
+            Employee existingEmployee = optionalEmployee.get();
+            existingEmployee.setFirstName(employeeDetails.getFirstName());
+            existingEmployee.setLastName(employeeDetails.getLastName());
+            existingEmployee.setEmail(employeeDetails.getEmail());
+
+            Employee updatedEmployee = repository.save(existingEmployee);
+            System.out.println("Employee updated successfully");
+            return ResponseEntity.ok(updatedEmployee);
+        } else {
+            System.out.println("Employee not found for ID: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    @Operation(summary = "Show Update Form", description = "Displays the form to update an employee")
-    @GetMapping("/showFormForUpdate/{id}")
-    public String showFormForUpdate(@PathVariable(value = "id") String id, Model model) {
-        Employee employee = employeeService.getEmployeeById(id).get();
-        model.addAttribute("employee", employee);
-        return "edit-employee";
-    }
+    @Operation(summary = "Delete employee")
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> deleteEmployee(@PathVariable String id) {
+        System.out.println("inside deleteEmployee with ID: " + id);
 
-    @Operation(summary = "Delete Employee", description = "Deletes an employee by ID")
-    @GetMapping("/deleteEmployee/{id}")
-    public String deleteEmployee(@PathVariable(value = "id") String id) {
-        this.employeeService.deleteEmployee(id);
-        return "redirect:/";
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            System.out.println("Employee deleted successfully");
+            return ResponseEntity.noContent().build();
+        } else {
+            System.out.println("Employee not found for ID: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

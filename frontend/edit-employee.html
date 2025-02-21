@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Employee</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<h1>Edit Employee</h1>
+<form id="employeeForm">
+    <input type="hidden" id="employeeId">
+    <input type="text" id="firstName" placeholder="First Name" required>
+    <input type="text" id="lastName" placeholder="Last Name" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <button type="submit">Update</button>
+</form>
+<script src="js/config.js"></script>
+<script src="js/edit-script.js"></script>
+</body>
+</html>
